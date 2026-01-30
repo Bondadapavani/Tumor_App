@@ -12,13 +12,27 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 session = ort.InferenceSession("brain_tumor.onnx")
 classes = ["Glioma", "Meningioma", "Pituitary", "No Tumor"]
 
-# ---------- MRI VALIDATION ----------
+# ---------- STRONG MRI VALIDATION ----------
 def is_mri_image(path):
-    img = cv2.imread(path, 0)
+    img = cv2.imread(path)
     if img is None:
         return False
-    variance = np.var(img)
-    return 500 < variance < 5000
+
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # MRI has medium contrast, low color
+    variance = np.var(gray)
+    b, g, r = cv2.split(img)
+    color_var = np.var(b) + np.var(g) + np.var(r)
+
+    # Edge structure (MRI has brain structures)
+    edges = cv2.Canny(gray, 50, 150)
+    edge_density = np.sum(edges > 0) / edges.size
+
+    # These values work well in practice
+    if 400 < variance < 6000 and color_var < 8000 and edge_density > 0.01:
+        return True
+    return False
 
 # ---------- REAL AI PREDICTION ----------
 def predict_tumor(path):
@@ -32,7 +46,12 @@ def predict_tumor(path):
     outputs = session.run(None, inputs)[0][0]
 
     idx = np.argmax(outputs)
-    confidence = round(float(outputs[idx]) * 100, 2)
+    max_prob = float(outputs[idx])
+    confidence = round(max_prob * 100, 2)
+
+    # Safety threshold
+    if max_prob < 0.80:
+        return "Uncertain MRI", confidence
 
     return classes[idx], confidence
 
@@ -51,9 +70,11 @@ def index():
             file.save(path)
             image_path = path
 
+            # Step 1: MRI validation
             if not is_mri_image(path):
-                message = "❌ INVALID IMAGE - PLEASE UPLOAD MRI ONLY"
+                message = "❌ INVALID IMAGE - PLEASE UPLOAD MRI SCAN ONLY"
             else:
+                # Step 2: Real prediction
                 result, confidence = predict_tumor(path)
 
     return render_template(
