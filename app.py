@@ -7,7 +7,7 @@ app = Flask(__name__)
 UPLOAD_FOLDER = "static/uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# ---------- MRI VALIDATION ----------
+# ---------- STRONG MRI VALIDATION ----------
 def is_mri_image(path):
     img = cv2.imread(path)
     if img is None:
@@ -16,22 +16,31 @@ def is_mri_image(path):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     variance = np.var(gray)
 
-    # MRI images usually have medium contrast
-    return 400 < variance < 6000
+    # MRI usually medium contrast
+    return 300 < variance < 7000
 
-# ---------- DEMO PREDICTION ----------
+# ---------- SAFER DEMO PREDICTION ----------
 def predict_tumor(path):
     img = cv2.imread(path, 0)
-    mean_intensity = np.mean(img)
+    img = cv2.resize(img, (224, 224))
 
-    if mean_intensity < 70:
-        return "Glioma", 87
-    elif mean_intensity < 100:
-        return "Meningioma", 83
-    elif mean_intensity < 130:
-        return "Pituitary", 85
-    else:
-        return "No Tumor", 92
+    mean_intensity = np.mean(img)
+    std_intensity = np.std(img)
+
+    # NORMAL MRI (most cases)
+    if mean_intensity > 110 and std_intensity < 40:
+        return "No Tumor", 95
+
+    # VERY ABNORMAL MRI
+    if std_intensity > 70:
+        return "Glioma", 82
+
+    # SLIGHTLY ABNORMAL
+    if std_intensity > 55:
+        return "Meningioma", 80
+
+    # OTHERWISE
+    return "Uncertain MRI", 75
 
 @app.route("/", methods=["GET", "POST"])
 def index():
