@@ -1,68 +1,86 @@
-html {
-    scroll-behavior: smooth;
-}
-
 body {
     margin: 0;
-    font-family: Arial;
-}
-
-.navbar {
-    background: #111;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
     color: white;
-    padding: 15px 40px;
-    display: flex;
-    justify-content: space-between;
 }
 
-.navbar ul {
-    list-style: none;
-    display: flex;
-    gap: 20px;
-}
-
-.navbar a {
-    color: white;
-    text-decoration: none;
-}
-
-.hero {
-    height: 90vh;
-    background: linear-gradient(120deg, #0f2027, #203a43);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    text-align: center;
-}
-
-.center h1 {
-    font-size: 60px;
-}
-
-.btn {
-    display: inline-block;
-    margin-top: 20px;
-    background: red;
-    color: white;
-    padding: 12px 30px;
+/* Center box */
+.container {
+    width: 450px;
+    margin: 100px auto;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 40px;
     border-radius: 20px;
-    text-decoration: none;
-}
-
-.detect {
-    padding: 60px;
     text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
 }
 
-.preview {
-    width: 300px;
+/* Big heading */
+h1 {
+    font-size: 42px;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+}
+
+/* Section headings */
+h2 {
+    font-size: 28px;
     margin-top: 20px;
-    border: 2px solid black;
 }
 
-.about {
-    background: #f2f2f2;
-    padding: 60px;
-    text-align: center;
+h3 {
+    font-size: 22px;
+}
+
+/* Input */
+input[type=file] {
+    margin: 20px 0;
+    font-size: 16px;
+    color: white;
+}
+
+/* Button */
+button {
+    padding: 12px 35px;
+    background: #00e5ff;
+    color: black;
+    border: none;
+    border-radius: 25px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #00bcd4;
+}
+
+/* MRI preview */
+.preview {
+    width: 260px;
+    margin-top: 25px;
+    border-radius: 12px;
+    border: 3px solid #00e5ff;
+}
+
+/* Result text */
+.result {
+    font-size: 26px;
+    font-weight: bold;
+    color: #00ffcc;
+    margin-top: 20px;
+}
+
+/* Confidence */
+.confidence {
+    font-size: 22px;
+    color: #ffd54f;
+}
+
+/* Error */
+.error {
+    font-size: 20px;
+    color: #ff5252;
+    font-weight: bold;
 }
