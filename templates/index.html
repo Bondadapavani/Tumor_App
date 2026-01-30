@@ -50,6 +50,7 @@
 
         .hero h1 {
             font-size: 60px;
+            letter-spacing: 2px;
         }
 
         .hero p {
@@ -72,37 +73,39 @@
         /* Detection Section */
         .section {
             min-height: 100vh;
-            padding: 100px 0;
+            padding: 120px 0;
             text-align: center;
-            background: #f4f6f8;
-            color: #222;
         }
 
         .card {
-            background: white;
+            background: rgba(0,0,0,0.6);
             width: 450px;
             margin: auto;
             padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
 
         .card h2 {
             margin-bottom: 20px;
+            font-size: 28px;
         }
 
         input[type=file] {
             margin: 20px 0;
+            font-size: 16px;
+            color: white;
         }
 
         button {
-            padding: 10px 30px;
+            padding: 12px 35px;
             border: none;
-            background: #2c5364;
-            color: white;
-            font-size: 16px;
-            border-radius: 6px;
+            background: #00e5ff;
+            color: black;
+            font-size: 18px;
+            border-radius: 25px;
             cursor: pointer;
+            font-weight: bold;
         }
 
         .result {
@@ -111,19 +114,27 @@
 
         .result img {
             margin-top: 15px;
-            width: 250px;
-            border-radius: 10px;
-            border: 4px solid #2c5364;
+            width: 260px;
+            border-radius: 12px;
+            border: 3px solid #00e5ff;
         }
 
         .valid {
-            color: green;
+            color: #00ffcc;
+            font-weight: bold;
+            font-size: 22px;
+        }
+
+        .confidence {
+            color: #ffd54f;
+            font-size: 20px;
             font-weight: bold;
         }
 
         .invalid {
-            color: red;
+            color: #ff5252;
             font-weight: bold;
+            font-size: 20px;
         }
     </style>
 </head>
@@ -142,8 +153,8 @@
 <!-- HERO -->
 <div class="hero" id="home">
     <div>
-        <h1>Brain Tumor Detection</h1>
-        <p>An intelligent system to classify MRI brain tumors</p>
+        <h1>BRAIN TUMOR DETECTION</h1>
+        <p>AI-based MRI Classification System</p>
         <button class="scroll-btn" onclick="document.getElementById('detect').scrollIntoView({behavior:'smooth'})">
             Scroll ↓
         </button>
@@ -153,162 +164,39 @@
 <!-- DETECTION -->
 <div class="section" id="detect">
     <div class="card">
-        <h2>Upload MRI Scan</h2>
+        <h2>UPLOAD MRI SCAN</h2>
 
         <form method="POST" enctype="multipart/form-data">
             <input type="file" name="file" required><br>
-            <button type="submit">Predict</button>
+            <button type="submit">PREDICT</button>
         </form>
 
         <div class="result">
-
-            {% if image_path %}
-                <h3>Uploaded MRI</h3>
-                <img src="/{{ image_path }}">
+            {% if image_url %}
+                <h3>UPLOADED MRI</h3>
+                <img src="{{ image_url }}">
             {% endif %}
 
             {% if result %}
-                <h3 class="valid">Result: {{ result }}</h3>
-            {% endif %}
-
-            {% if confidence %}
-                <p>Confidence: <b>{{ confidence }}%</b></p>
-                <p class="valid">MRI detected successfully.</p>
+                <p class="valid">RESULT: {{ result }}</p>
+                <p class="confidence">CONFIDENCE: {{ confidence }}%</p>
             {% endif %}
 
             {% if message %}
                 <p class="invalid">{{ message }}</p>
             {% endif %}
-
         </div>
     </div>
 </div>
 
 <!-- ABOUT -->
 <div class="section" id="about">
-    <h1>About Project</h1>
+    <h1>ABOUT PROJECT</h1>
     <p style="width:60%;margin:auto;margin-top:20px;">
-        This project uses computer vision techniques to validate MRI images
-        and perform statistical classification of brain tumor types.
-        The system rejects non-MRI images and provides confidence scores.
+        This system validates MRI images and predicts brain tumor type
+        using computer vision techniques and statistical analysis.
+        Non-MRI images are automatically rejected.
     </p>
-</div>
-
-</body>
-</html><!DOCTYPE html>
-<html>
-<head>
-    <title>Brain Tumor Detection</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(120deg, #e0f2ff, #f7fbff);
-            margin: 0;
-        }
-
-        .hero {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .hero h1 {
-            font-size: 60px;
-            color: #003366;
-        }
-
-        .scroll-btn {
-            margin-top: 30px;
-            padding: 12px 30px;
-            background: #007bff;
-            color: white;
-            border-radius: 30px;
-            text-decoration: none;
-            font-size: 18px;
-        }
-
-        .section {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .card {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            width: 400px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
-        .preview-img {
-            width: 250px;
-            margin: 20px 0;
-            border-radius: 10px;
-            border: 2px solid #ccc;
-        }
-
-        .result {
-            font-size: 22px;
-            color: green;
-            margin-top: 10px;
-        }
-
-        .error {
-            color: red;
-            font-size: 18px;
-        }
-
-        button {
-            padding: 10px 25px;
-            background: #004aad;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-    </style>
-</head>
-<body>
-
-<!-- HERO -->
-<div class="hero">
-    <h1>Brain Tumor Detection</h1>
-    <p>AI-based MRI Classification System</p>
-    <a href="#detect" class="scroll-btn">Scroll ↓</a>
-</div>
-
-<!-- DETECTION -->
-<div class="section" id="detect">
-    <div class="card">
-        <h2>Upload MRI Scan</h2>
-
-        <form method="POST" enctype="multipart/form-data">
-            <input type="file" name="file" required><br><br>
-            <button type="submit">Predict</button>
-        </form>
-
-        {% if image_path %}
-            <h3>Uploaded MRI</h3>
-            <img src="{{ image_path }}?v={{ confidence }}" class="preview-img">
-        {% endif %}
-
-        {% if result %}
-            <div class="result">
-                Result: {{ result }} <br>
-                Confidence: {{ confidence }}%
-            </div>
-        {% endif %}
-
-        {% if message %}
-            <div class="error">{{ message }}</div>
-        {% endif %}
-    </div>
 </div>
 
 </body>
