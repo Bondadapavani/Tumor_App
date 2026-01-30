@@ -1,15 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Brain Tumor Detection AI</title>
+    <title>Brain Tumor Detection</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-
         body {
+            margin: 0;
+            font-family: Arial;
             background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
             color: white;
         }
@@ -17,13 +13,13 @@
         .container {
             min-height: 100vh;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
         }
 
         .card {
-            background: rgba(0,0,0,0.6);
-            width: 600px;
+            background: rgba(0,0,0,0.65);
+            width: 650px;
             padding: 50px;
             border-radius: 25px;
             text-align: center;
@@ -32,16 +28,14 @@
 
         h1 {
             font-size: 50px;
-            margin-bottom: 20px;
             color: #00e5ff;
         }
 
         h2 {
             font-size: 32px;
-            margin-bottom: 20px;
         }
 
-        input[type=file] {
+        input {
             font-size: 18px;
             margin: 20px 0;
         }
@@ -54,37 +48,28 @@
             font-size: 20px;
             font-weight: bold;
             cursor: pointer;
-            color: black;
-        }
-
-        .result {
-            margin-top: 30px;
         }
 
         .result img {
-            margin-top: 15px;
+            margin-top: 20px;
             width: 300px;
             border-radius: 15px;
             border: 4px solid #00e5ff;
         }
 
         .valid {
-            font-size: 30px;
+            font-size: 28px;
             color: #00ffcc;
-            font-weight: bold;
-            margin-top: 15px;
         }
 
         .confidence {
-            font-size: 26px;
+            font-size: 24px;
             color: #ffd54f;
-            font-weight: bold;
         }
 
         .invalid {
-            font-size: 26px;
+            font-size: 24px;
             color: #ff5252;
-            font-weight: bold;
         }
     </style>
 </head>
@@ -100,21 +85,19 @@
             <button type="submit">PREDICT</button>
         </form>
 
-        <div class="result">
-            {% if image_path %}
-                <h2>UPLOADED MRI</h2>
-                <img src="{{ url_for('static', filename='uploads/' + image_path.split('/')[-1]) }}">
-            {% endif %}
+        {% if image_path %}
+            <h2>UPLOADED MRI</h2>
+            <img src="{{ url_for('static', filename='uploads/' + image_path.split('/')[-1]) }}">
+        {% endif %}
 
-            {% if result %}
-                <p class="valid">RESULT: {{ result }}</p>
-                <p class="confidence">CONFIDENCE: {{ confidence }}%</p>
-            {% endif %}
+        {% if result %}
+            <p class="valid">RESULT: {{ result }}</p>
+            <p class="confidence">CONFIDENCE: {{ confidence }}%</p>
+        {% endif %}
 
-            {% if message %}
-                <p class="invalid">{{ message }}</p>
-            {% endif %}
-        </div>
+        {% if message %}
+            <p class="invalid">{{ message }}</p>
+        {% endif %}
     </div>
 </div>
 
