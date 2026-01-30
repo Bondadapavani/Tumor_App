@@ -1,80 +1,61 @@
 import os
 import cv2
 import numpy as np
+import onnxruntime as ort
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
-
 UPLOAD_FOLDER = "static/uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# ---------- STRONG MRI VALIDATION ----------
+# Load ONNX model
+session = ort.InferenceSession("brain_tumor.onnx")
+classes = ["Glioma", "Meningioma", "Pituitary", "No Tumor"]
+
+# MRI validation
 def is_mri_image(path):
-    img = cv2.imread(path)
+    img = cv2.imread(path, 0)
     if img is None:
         return False
+    variance = np.var(img)
+    return 500 < variance < 5000
 
-    # 1. Check grayscale similarity
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    b, g, r = cv2.split(img)
-    color_diff = np.mean(np.abs(b - g)) + np.mean(np.abs(g - r))
-
-    # 2. Edge structure
-    edges = cv2.Canny(gray, 50, 150)
-    edge_density = np.sum(edges > 0) / edges.size
-
-    # 3. Intensity variance
-    variance = np.var(gray)
-
-    # MRI characteristics
-    if color_diff < 15 and edge_density > 0.02 and 500 < variance < 6000:
-        return True
-    else:
-        return False
-
-# ---------- FAKE AI PREDICTION ----------
+# Real AI prediction
 def predict_tumor(path):
     img = cv2.imread(path, 0)
-    mean = np.mean(img)
+    img = cv2.resize(img, (224, 224))
+    img = img / 255.0
+    img = img.astype(np.float32)
+    img = np.expand_dims(img, axis=(0,1))
 
-    if mean < 70:
-        return "Glioma", 88
-    elif mean < 100:
-        return "Meningioma", 84
-    elif mean < 130:
-        return "Pituitary", 86
-    else:
-        return "No Tumor", 92
+    inputs = {session.get_inputs()[0].name: img}
+    outputs = session.run(None, inputs)[0][0]
 
-# ---------- ROUTE ----------
+    idx = np.argmax(outputs)
+    confidence = round(float(outputs[idx]) * 100, 2)
+
+    return classes[idx], confidence
+
 @app.route("/", methods=["GET", "POST"])
 def index():
-    result = None
-    confidence = None
-    image_url = None
-    message = None
+    result = confidence = image_path = message = None
 
     if request.method == "POST":
-        file = request.files.get("file")
+        file = request.files["file"]
+        path = os.path.join(UPLOAD_FOLDER, file.filename)
+        file.save(path)
+        image_path = path
 
-        if file:
-            filename = "mri.jpg"   # overwrite each time
-            save_path = os.path.join(UPLOAD_FOLDER, filename)
-            file.save(save_path)
-
-            image_url = "/static/uploads/" + filename
-
-            # Strong MRI filter
-            if not is_mri_image(save_path):
-                message = "❌ Invalid Image. Please upload MRI scan only."
-            else:
-                result, confidence = predict_tumor(save_path)
+        if not is_mri_image(path):
+            message = "❌ INVALID IMAGE - PLEASE UPLOAD MRI SCAN ONLY"
+        else:
+            result, confidence = predict_tumor(path)
 
     return render_template(
         "index.html",
         result=result,
         confidence=confidence,
-        image_url=image_url,
+        image_path=image_path,
         message=message
     )
 
